@@ -1,10 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { IonContent, IonPage } from "@ionic/react";
-import { BleClient, BleDevice } from "@capacitor-community/bluetooth-le";
+import { BleClient } from "@capacitor-community/bluetooth-le";
 import { Capacitor } from "@capacitor/core";
-import { Loading, Terminal, TopBar, Devices, Services } from "../components";
+import { IonContent, IonPage } from "@ionic/react";
+import React, { useCallback, useEffect, useState } from "react";
+import { Devices, Loading, Services, Terminal, TopBar } from "../components";
+//import { KeepAwake } from '@capacitor-community/keep-awake';
+import { preventSleep } from '../helpers/keepAwake';
 
-
+interface DataType{
+  chx: any,
+  bin: string,
+  type: string,
+  ascii: string
+}
 
 const BleTest: React.FC = () => {
 
@@ -22,8 +29,11 @@ const BleTest: React.FC = () => {
   const [ showTerminal, setShowTerminal ] = useState(false);
   const [ data, setData ] = useState<DataType[]>([]); //{type: read/write/notify/error, bin: 8 int binary, ascii: ASCII Value}
   const [ connectBT, setConnectBt] = useState({});
+  const [ doReset, setDoReset] = useState(false); //simple flag to rerender getBtStatus
+
 
   useEffect(() => {
+    preventSleep();
     // code to run on component mount
     const prefixFilter = localStorage.getItem("prefix")
     const optionalService = localStorage.getItem("optionalService")
@@ -33,17 +43,11 @@ const BleTest: React.FC = () => {
     if (optionalService) {
       setOptionalService(optionalService);
     }
-    getBtStatus();
   }, [])
 
-  interface DataType{
-    chx: any,
-    bin: string,
-    type: string,
-    ascii: string
-  }
 
-  const getBtStatus = async () => {
+  const getBtStatus = useCallback(async () => {
+    console.log("GET BT SCAN WAS RUN");
     try {
       await BleClient.initialize();
       let isBtEnabled = await BleClient.isEnabled();
@@ -54,7 +58,13 @@ const BleTest: React.FC = () => {
     } catch (e) {
       catchError(e, "Bluetooth Unavailable");
     }
-  };
+    setDoReset(false);
+  }, [doReset]);
+
+
+  useEffect(() => {
+    getBtStatus();
+  }, [getBtStatus])
 
   const scanBt = async () => {
     try {
@@ -140,7 +150,8 @@ const BleTest: React.FC = () => {
       setDevices([]);
       setSelectedDevice({});
       setServices([]);
-
+      setDoReset(true);
+      /*
       const prefixFilter = localStorage.getItem("prefix")
       const optionalService = localStorage.getItem("optionalService")
       if (prefixFilter) {
@@ -149,6 +160,7 @@ const BleTest: React.FC = () => {
       if (optionalService) {
         setOptionalService(optionalService);
       }
+      */
       getBtStatus();
     } catch (e) {
       catchError(e, "Cannot Disconnect Error");
