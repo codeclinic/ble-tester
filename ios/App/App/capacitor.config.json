@@ -1,6 +1,6 @@
 {
 	"appId": "io.sourcya.ble.tester.app",
-	"appName": "BLE Tester",
+	"appName": "BLE Tester React Hooks",
 	"bundledWebRuntime": false,
 	"npmClient": "npm",
 	"webDir": "build",

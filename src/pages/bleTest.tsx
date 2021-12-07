@@ -97,12 +97,16 @@ const BleTest: React.FC = () => {
       setLoading(true);
       setData([]);
       setSelectedDevice(device);
-      await BleClient.initialize();
-      await BleClient.disconnect(selectedDevice.deviceId);
-      await BleClient.connect(selectedDevice.deviceId, (id) =>
-        console.log(`Device ${id} disconnected!`)
-      );
-      await BleClient.getServices(selectedDevice.deviceId).then(
+      await BleClient.initialize().then(
+        async() => await BleClient.disconnect(device.deviceId) //previously selectedDevice.deviceId
+        .then(
+          async() => await BleClient.connect(device.deviceId, (id) =>
+            console.log(`Device ${id} disconnected!`) //previously selectedDevice.deviceId
+          )
+        )
+      )
+       //previously selectedDevice.deviceId
+      await BleClient.getServices(device.deviceId).then(
         (services) => {
           if (services[0]) {
             setMessage("Connected");
@@ -117,7 +121,7 @@ const BleTest: React.FC = () => {
         }
       );
     } catch (e) {
-      catchError(e, "Cannot Connect Error");
+      catchError(e, e+"");
     }
   };
 

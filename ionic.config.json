@@ -1,5 +1,5 @@
 {
-  "name": "BLE Tester",
+  "name": "BLE Tester React Hooks",
   "integrations": {
     "capacitor": {}
   },
