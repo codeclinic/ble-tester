@@ -13,7 +13,7 @@ class TopBarC extends React.Component {
         >
           Scan
         </IonButton>
-        <IonButton onClick={() => this.props.reset()}>
+        <IonButton onClick={() => this.props.reset(this.props.selectedDevice)}>
           <IonIcon icon={refreshOutline} />
         </IonButton>
       </IonCardContent>

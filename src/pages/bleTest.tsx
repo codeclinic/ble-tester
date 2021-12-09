@@ -1,4 +1,4 @@
-import { BleClient } from "@capacitor-community/bluetooth-le";
+import { BleClient, numberToUUID } from "@capacitor-community/bluetooth-le";
 import { Capacitor } from "@capacitor/core";
 import { IonContent, IonPage } from "@ionic/react";
 import React, { useCallback, useEffect, useState } from "react";
@@ -47,7 +47,6 @@ const BleTest: React.FC = () => {
 
 
   const getBtStatus = useCallback(async () => {
-    console.log("GET BT SCAN WAS RUN");
     try {
       await BleClient.initialize();
       let isBtEnabled = await BleClient.isEnabled();
@@ -75,37 +74,40 @@ const BleTest: React.FC = () => {
       setServices([]);
       setMessage("Scanning...");
 
+      const TEST_SERVICE = numberToUUID(0x180f);
+
       await BleClient.initialize();
-      let device = await BleClient.requestDevice({
-        services: [],
-        optionalServices: optionalService ? [optionalService] : [],
-        namePrefix: prefixFilter ? prefixFilter : '',
+      const device = await BleClient.requestDevice({
+        services: [TEST_SERVICE],
+        //optionalServices: optionalService ? [optionalService] : [],
+        //namePrefix: prefixFilter ? prefixFilter : '',
       });
 
       setDevices([device]);
       setConnectBt(device);
 
     } catch (e) {
-      catchError(e, "Scan Error");
+      catchError(e, "Scan Error "+e);
     }
   };
 
   const connectBt = async (device:any) => {
     try {
-      setMessage("Connecting...");
-      setServices([]);
+      
       setLoading(true);
-      setData([]);
       setSelectedDevice(device);
+      setServices([]);
+      setData([]);
+
       await BleClient.initialize().then(
-        async() => await BleClient.disconnect(device.deviceId) //previously selectedDevice.deviceId
-        .then(
-          async() => await BleClient.connect(device.deviceId, (id) =>
-            console.log(`Device ${id} disconnected!`) //previously selectedDevice.deviceId
-          )
-        )
+        async() => await BleClient.disconnect(device.deviceId) //selectedDevice.deviceId
       )
-       //previously selectedDevice.deviceId
+
+      setMessage("Connecting...");
+      
+      await BleClient.connect(device.deviceId, (id) =>
+        console.log(`Device ${id} disconnected!`)
+      );
       await BleClient.getServices(device.deviceId).then(
         (services) => {
           if (services[0]) {
@@ -121,7 +123,7 @@ const BleTest: React.FC = () => {
         }
       );
     } catch (e) {
-      catchError(e, e+"");
+      catchError(e, "" + e);
     }
   };
 
@@ -144,9 +146,12 @@ const BleTest: React.FC = () => {
     }
   };
 
-  const reset = async () => {
+  const reset = async (device:any) => {
     try {
       await BleClient.initialize();
+      if(selectedDevice.deviceId){
+        await BleClient.disconnect(selectedDevice.deviceId)
+      }
       setMessage("Disconnected");
       setLoading(false);
       setIsConnected(false);
@@ -155,7 +160,7 @@ const BleTest: React.FC = () => {
       setSelectedDevice({});
       setServices([]);
       setDoReset(true);
-      /*
+      
       const prefixFilter = localStorage.getItem("prefix")
       const optionalService = localStorage.getItem("optionalService")
       if (prefixFilter) {
@@ -164,10 +169,11 @@ const BleTest: React.FC = () => {
       if (optionalService) {
         setOptionalService(optionalService);
       }
-      */
+      
       getBtStatus();
     } catch (e) {
-      catchError(e, "Cannot Disconnect Error");
+      catchError(e, "Cannot Disconnect Error" + e);
+      //catchError(e, ""+e);
     }
   };
 
@@ -312,7 +318,7 @@ const BleTest: React.FC = () => {
           chx: chxUUID,
           type: "error",
           bin: "0x0",
-          ascii: "Error on Read from Device",
+          ascii: "Error on Read from Device: " + e,
         }
       ]);
     }
@@ -368,7 +374,7 @@ const BleTest: React.FC = () => {
           chx: chxUUID,
           type: "error",
           bin: "0x0",
-          ascii: "Error on Notify from Device",
+          ascii: "Error on Notify from Device: " + e,
         }
       ]);
     }
@@ -408,7 +414,7 @@ const BleTest: React.FC = () => {
           chx: chxUUID,
           type: "error",
           bin: "0x0",
-          ascii: "Cannot Write to Device",
+          ascii: "Cannot Write to Device: " + e,
         }
       ]);
     }
@@ -428,7 +434,7 @@ const BleTest: React.FC = () => {
           <TopBar
             isBtEnabled={isBtEnabled}
             scanBt={() => scanBt()}
-            reset={() => reset()}
+            reset={() => reset(selectedDevice)}
           />
           <Devices
             isNative={isNative}
