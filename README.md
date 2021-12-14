@@ -1,5 +1,5 @@
 ### BLE Tester
-###### A Cross-Platform App for testing BLE devices 
+###### A cross platform app (web & mobile) project to demonstrate connecting to Bluetooth / BLE devices. This project is a of the BLE Tester app which has been recoded from Classes to Hooks and Typrscript. It also includes a few minor improvements.
 > Tested with Chrome and Android 6+
 
 ###### What is inside?
@@ -10,8 +10,8 @@
 
 #### Run & Build
 ##### Use
-- [BLE Tester for Web (Needs Updated Desktop Chrome for Linx, Mac or Windows)](https://sourcya-ble-tester.web.app/)
-- [Android APK](https://github.com/sourcya/ble-tester/blob/main/APK/app-debug.apk)
+- [BLE Tester for Web (Needs Updated Desktop Chrome for Linx, Mac or Windows)](#)
+- [Android APK](https://github.com/codeclinic/ble-tester/blob/main/APK/app-debug.apk)
 
 ##### Development
 - install node and npm
@@ -34,7 +34,7 @@ ionic build --prod
 On success the build directory will contain a production web build of the app
 
 ###### Android
-> requires Linux machine & docker installed
+> Linux machine & docker installed (or build using Android Studio)
 ```
 sh build_android
 ```
