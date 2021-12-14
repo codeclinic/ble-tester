@@ -1,5 +1,5 @@
 ### BLE Tester
-###### A cross platform app (web & mobile) project to demonstrate connecting to Bluetooth / BLE devices. This project is a of the BLE Tester app which has been recoded from Classes to Hooks and Typrscript. It also includes a few minor improvements.
+###### A cross platform app (web & mobile) project to demonstrate connecting to Bluetooth / BLE devices. This project is a fork of the BLE Tester app which has been re-coded from Classes to Hooks and Typrscript. It also includes a few minor improvements.
 > Tested with Chrome and Android 6+
 
 ###### What is inside?
